@@ -7,7 +7,7 @@ public class Draw extends PApplet {
         PApplet.runSketch(new String[]{""}, new Draw());
     }
 
-    int moveCounter = 0;
+    //test
 
     App app = new App();
     int[][] fieldCoordinates = {
@@ -16,7 +16,6 @@ public class Draw extends PApplet {
             {800, 375}, {700, 375}, {600, 375}, {500, 375}, {400, 375}, {300, 375},
             {300, 225}, {400, 225}, {500,225}, {600, 225}, {725, 225}
     };
-
 
 
 
@@ -30,25 +29,33 @@ public class Draw extends PApplet {
     public void field(){
     }
 
-    // Hilfsmethode - Kann später weg
     public void mousePressed(){
         if (mousePressed){
             if (mouseX > 50 && mouseX < 150){
                 if(mouseY > 280 && mouseY < 310){
                     app.dice();
-                    moveCounter++;
+                    app.setMoveCounter(app.getMoveCounter()+1); ;
                 }
             }
-            println();
-            println("mouse X: " + mouseX);
-            println("mouse Y: " + mouseY);
-            println();
         }
-        println(app.getBoard());
-        println(app.getCurrentPlayer());
+       println(app.getBoard());
+       println(app.getCurrentPlayer());
     }
 
-
+    public void gameOver(){
+        if(app.checkWinner()){
+            textSize(50);
+            if(app.getCurrentPlayer() == 1){
+                fill(255, 165, 0);
+                text("Player " + app.getPlayer1() + " wins!", 275, 460);
+            } else if (app.getCurrentPlayer() == 2){
+                fill(0,0,255);
+                text("Player " + app.getPlayer2() + " wins!", 275, 460);
+            }
+            //delay(4000);
+            //clear();
+        }
+    }
 
     public void updateField(){
         for (int i = 0; i < app.getBoard().length; i++){
@@ -62,10 +69,10 @@ public class Draw extends PApplet {
                 fill(255);
                 ellipse(fieldCoordinates[i][0], fieldCoordinates[i][1], 40, 40);
             }
-            if (moveCounter >= 1){
+            if (app.getMoveCounter() >= 1){
                 fill(255,210,150);
                 ellipse(50,50,40,40);
-            }if (moveCounter >= 2){
+            }if (app.getMoveCounter() >= 2){
                 fill(150,150,255);
                 ellipse(50,100,40,40);
             }
@@ -73,7 +80,7 @@ public class Draw extends PApplet {
     }
 
     public void checkSameField() {
-        if(moveCounter >= 1) {
+        if(app.getMoveCounter() >= 1) {
             if (app.getPlayer1Index() == app.getPlayer2Index()) {
                 fill(255, 165, 0);
                 ellipse(fieldCoordinates[app.getPlayer1Index()][0] + 4, fieldCoordinates[app.getPlayer1Index()][1] + 4, 40, 40);
@@ -83,36 +90,11 @@ public class Draw extends PApplet {
         }
     }
 
-
-
     public void draw() {
         // Warum geht das nicht amk
         if(mousePressed){
             keyPressed();
         }
-
-        if (app.getCurrentPlayer() == 1){
-            if (app.getPlayer1Index() == 7 || app.getPlayer1Index() == 16){
-                //app.specialField();
-                //fill(255);
-                //text("Case: " + app.specialField(), 550, 440);
-                println("specialfield");
-                println(app.getCurrentPlayer());
-            }
-        } else if (app.getCurrentPlayer() == 2){
-            if (app.getPlayer2Index() == 7 || app.getPlayer2Index() == 16){
-                //app.specialField();
-                //fill(255);
-                //text("Case: " + app.specialField(), 550, 440);
-                println("specialfield");
-                println(app.getCurrentPlayer());
-            }
-        }
-
-
-
-
-
         noStroke();
         //PImage img;
         //img = loadImage("./lawn.jpg");
@@ -167,7 +149,7 @@ public class Draw extends PApplet {
         rect(300, 225, 50, 50);
 
         // Ladder
-        fill(100,255,100);
+        fill(0,255,0);
         rect(500, 300, 2, 100);
         rect(500, 375, 50, 50);
 
@@ -198,12 +180,53 @@ public class Draw extends PApplet {
         text(app.getCurrentDice(), 75, 400);
 
 
+        app.ladder();
+        if (app.getPlayer1Index() == 14 || app.getPlayer2Index() == 14){
+            fill(0, 255, 0);
+            textSize(15);
+            text("Ladder!", 700, 25);
+        }
+        app.snake();
+        if (app.getPlayer1Index() == 17 || app.getPlayer1Index() == 20 || app.getPlayer2Index() == 17 || app.getPlayer2Index() == 20){
+            fill(255, 0, 0);
+            textSize(15);
+            text("Snake!", 700, 25);
+        }
+
+        app.specialField();
+        if (app.getPlayer1Index() == 7 || app.getPlayer1Index() == 16 || app.getPlayer2Index() == 7 || app.getPlayer2Index() == 16){
+            fill(200,15,200);
+            textSize(20);
+            if (app.specialField() == 1){
+                text("Spieler ein Feld vor", 275, 470);
+            }if (app.specialField() == 2){
+                text("Spieler zwei Felder vor", 275, 470);
+            }if (app.specialField() == 3){
+                text("Spieler drei Felder vor", 275, 470);
+            }if (app.specialField() == 4){
+                text("Gegner ein Feld zurück", 275, 470);
+            }if (app.specialField() == 5){
+                text("Gegner zwei Felder zurück", 275, 470);
+            }if (app.specialField() == 6){
+                text("Spieler rückt vor bis Feld 20", 275, 470);
+            }if (app.specialField() == 7){
+                text("Spieler zurück auf Feld 2", 275, 470);
+            }
+        }
+
+
+
+        if (app.getCurrentDice() > 0){
+            fill(0);
+            textSize(15);
+            text("Player " + app.getCurrentPlayer() + " moves " + app.getCurrentDice() + " Fields", 275, 25);
+        }
+
         updateField();
         checkSameField();
+        gameOver();
+
 
 
     }
-
-
-
 }
