@@ -41,8 +41,8 @@ public class Draw extends PApplet {
                 }
             }
         }
-        println(app.getBoard());
-        println(app.getCurrentPlayer());
+        //println(app.getBoard());
+        //println(app.getCurrentPlayer());
     }
 
     public void gameOver() {
@@ -178,7 +178,7 @@ public class Draw extends PApplet {
         textSize(12);
         text("Roll the Dice", 65, 300);
         textSize(55);
-        text(app.getCurrentDice(), 75, 400);
+        text(app.getDice(), 75, 400);
 
 
         app.ladder();
@@ -209,10 +209,10 @@ public class Draw extends PApplet {
 
 
 
-        if (app.getCurrentDice() > 0) {
+        if (app.getDice() > 0) {
             fill(0);
             textSize(15);
-            text("Player " + app.getCurrentPlayer() + " moves " + app.getCurrentDice() + " Fields", 275, 25);
+            text("Player " + app.getCurrentPlayer() + " moves " + app.getDice() + " Fields", 275, 25);
         }
 
 

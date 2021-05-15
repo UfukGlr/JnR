@@ -18,7 +18,7 @@ public interface Game {
         Bewegt den Spieler auf ein vorher festgelegtes Feld zurück nach hinten
          */
 
-        void walk();
+        void walk(int dice);
         /*
         setzt den Index des Spielfeldes auf dem der Player drauf ist auf 0 (leeres Feld)
         und bewegt den Spieler um die Felder die gewürfelt wurden

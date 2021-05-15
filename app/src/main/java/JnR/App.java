@@ -8,7 +8,7 @@ public class App implements Game {
     private int currentPlayer;
     private final int player1;
     private final int player2;
-    private int currentDice;
+    private int dice;
     private int player1Index;
     private int player2Index;
     private int moveCounter;
@@ -36,6 +36,7 @@ public class App implements Game {
         this.stayCounter = 2;
         this.stay1 = false;
         this.stay2 = false;
+        this.dice = 0;
     }
 
     public int getMoveCounter() {
@@ -44,6 +45,14 @@ public class App implements Game {
 
     public void setMoveCounter(int count) {
         this.moveCounter = count;
+    }
+
+    public int getDice(){
+        return this.dice;
+    }
+
+    public void setDice(int dice){
+        this.dice = dice;
     }
 
     public int getBoardIndex(int index) {
@@ -60,14 +69,6 @@ public class App implements Game {
 
     public void setBoard(int[] board) {
         this.board = board;
-    }
-
-    public int getCurrentDice() {
-        return currentDice;
-    }
-
-    public void setCurrentDice(int currentDice) {
-        this.currentDice = currentDice;
     }
 
     public void setCurrentPlayer(int player) {
@@ -107,27 +108,23 @@ public class App implements Game {
     @Override
     public void dice() {
         Random rnd = new Random();
-        setCurrentDice((rnd.nextInt(6) + 1));
-        walk();
         if (currentPlayer == 1) {
             if (checkWinner()) {
                 setCurrentPlayer(1);
             } else {
                 // Dice Again
-                if (diceAgain())
-                    setCurrentPlayer(2);
-                else {
+                if (diceAgain()) {
                     setCurrentPlayer(1);
-                }
-                // Aussetzen
-                if (stay1){
+                } else {
                     setCurrentPlayer(2);
-                    stayCounter --;
                 }
-                if (stayCounter == 0){
-                    stay1 = false;
-                    stayCounter = 2;
+                stay();
+                if(stay1){
+                    walk(0);
+                } else {
+                    walk(rnd.nextInt(6)+1);
                 }
+                stay1 = false;
 
             }
 
@@ -137,19 +134,18 @@ public class App implements Game {
                 setCurrentPlayer(2);
             } else {
                 // Dice Again
-                if (diceAgain())
-                    setCurrentPlayer(1);
-                else {
+                if (diceAgain()) {
                     setCurrentPlayer(2);
-                }
-                if (stay2){
+                } else {
                     setCurrentPlayer(1);
-                    stayCounter --;
                 }
-                if (stayCounter == 0){
-                    stay2 = false;
-                    stayCounter = 2;
+                stay();
+                if(stay2){
+                    walk(0);
+                } else {
+                    walk(rnd.nextInt(6)+1);
                 }
+                stay2 = false;
 
             }
         }
@@ -201,27 +197,28 @@ public class App implements Game {
 
 
     @Override
-    public void walk() {
+    public void walk(int dice) {
+        setDice(dice);
         if (getCurrentPlayer() == 1) {
-            if (getPlayer1Index() + getCurrentDice() > 21) {
+            if (getPlayer1Index() + dice > 21) {
                 // mach nichts
             } else {
                 if (moveCounter > 1 && getPlayer1Index() == getPlayer2Index()) {
                     setBoardIndex(getPlayer1Index(), 2);
                 } else
                     setBoardIndex(getPlayer1Index(), 0);
-                setPlayer1Index(getPlayer1Index() + getCurrentDice());
+                setPlayer1Index(getPlayer1Index() + dice);
                 this.setBoardIndex(player1Index, 1);
             }
         } else if (getCurrentPlayer() == 2) {
-            if (getPlayer2Index() + getCurrentDice() > 21) {
+            if (getPlayer2Index() + dice > 21) {
                 // mach nichts
             } else {
                 if (moveCounter > 1 && getPlayer1Index() == getPlayer2Index()) {
                     setBoardIndex(getPlayer2Index(), 1);
                 } else
                     setBoardIndex(getPlayer2Index(), 0);
-                setPlayer2Index(getPlayer2Index() + getCurrentDice());
+                setPlayer2Index(getPlayer2Index() + dice);
                 this.setBoardIndex(player2Index, 2);
 
             }
@@ -379,14 +376,14 @@ public class App implements Game {
     public boolean diceAgain() {
         if (currentPlayer == 1) {
             if (getPlayer1Index() == 16) {
-                return false;
+                return true;
             }
         }
         if (currentPlayer == 2) {
             if (getPlayer2Index() == 16) {
-                return false;
+                return true;
             }
         }
-        return true;
+        return false;
     }
 }
