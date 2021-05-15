@@ -29,6 +29,10 @@ public interface Game {
          Gibt ein True zurück, sobald einer der Player auf dem Zielfeld steht.
           */
 
+        void stay();
+
+        boolean diceAgain();
+
         void gameOver();
-        int specialField();
+        String specialField();
 }

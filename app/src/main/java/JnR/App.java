@@ -2,7 +2,7 @@ package JnR;
 
 import java.util.Random;
 
-public class App implements Game{
+public class App implements Game {
 
     private int board[];
     private int currentPlayer;
@@ -12,8 +12,11 @@ public class App implements Game{
     private int player1Index;
     private int player2Index;
     private int moveCounter;
+    private int stayCounter;
+    private boolean stay1;
+    private boolean stay2;
 
-    App(){
+    App() {
         this.currentPlayer = 1;
         this.player1 = 1;
         this.player2 = 2;
@@ -23,19 +26,23 @@ public class App implements Game{
         // 3 = Rot 1
         // 4 = Rot 2
         // 5 = Grün
-        // 6 = Ereignis
-        // 7 = Ziel
-        this.board = new int[] {0, 0, 0, 0, 0, 0, 0, 6, 0, 0, 0, 0, 0 ,0 ,5 ,0 ,6, 3, 0, 0, 4, 7};
+        // 6 = Aussetzen
+        // 7 = Nochmal Würfeln
+        // 8 = Ziel
+        this.board = new int[]{0, 0, 0, 0, 0, 0, 0, 6, 0, 0, 0, 0, 0, 0, 5, 0, 7, 3, 0, 0, 4, 8};
         this.player1Index = 0;
         this.player2Index = 0;
         this.moveCounter = 0;
+        this.stayCounter = 2;
+        this.stay1 = false;
+        this.stay2 = false;
     }
 
-    public int getMoveCounter(){
+    public int getMoveCounter() {
         return this.moveCounter;
     }
 
-    public void setMoveCounter(int count){
+    public void setMoveCounter(int count) {
         this.moveCounter = count;
     }
 
@@ -43,11 +50,11 @@ public class App implements Game{
         return this.board[index];
     }
 
-    public void setBoardIndex(int index, int value){
+    public void setBoardIndex(int index, int value) {
         this.board[index] = value;
     }
 
-    public int[] getBoard(){
+    public int[] getBoard() {
         return this.board;
     }
 
@@ -63,29 +70,30 @@ public class App implements Game{
         this.currentDice = currentDice;
     }
 
-    public void setCurrentPlayer(int player){
+    public void setCurrentPlayer(int player) {
         this.currentPlayer = player;
     }
 
-    public int getPlayer1(){
+    public int getPlayer1() {
         return player1;
     }
 
-    public int getPlayer2(){
+    public int getPlayer2() {
         return player2;
     }
 
-    public int getPlayer1Index(){
+    public int getPlayer1Index() {
         return this.player1Index;
     }
 
-    public int getPlayer2Index(){
+    public int getPlayer2Index() {
         return this.player2Index;
     }
 
-    public int getCurrentPlayer(){
+    public int getCurrentPlayer() {
         return currentPlayer;
     }
+
 
     public void setPlayer1Index(int player1Index) {
         this.player1Index = player1Index;
@@ -96,27 +104,57 @@ public class App implements Game{
     }
 
 
-
     @Override
     public void dice() {
-    Random rnd = new Random();
-    setCurrentDice((rnd.nextInt(6)+1));
-    walk();
+        Random rnd = new Random();
+        setCurrentDice((rnd.nextInt(6) + 1));
+        walk();
+        if (currentPlayer == 1) {
+            if (checkWinner()) {
+                setCurrentPlayer(1);
+            } else {
+                // Dice Again
+                if (diceAgain())
+                    setCurrentPlayer(2);
+                else {
+                    setCurrentPlayer(1);
+                }
+                // Aussetzen
+                if (stay1){
+                    setCurrentPlayer(2);
+                    stayCounter --;
+                }
+                if (stayCounter == 0){
+                    stay1 = false;
+                    stayCounter = 2;
+                }
 
-    if(currentPlayer == 1){
-        if (checkWinner()){
-            setCurrentPlayer(1);
-        } else {
-            setCurrentPlayer(2);
-        }
-    } else if (currentPlayer == 2){
-        if(checkWinner()){
-            setCurrentPlayer(2);
-        } else {
-            setCurrentPlayer(1);
+            }
+
+
+        } else if (currentPlayer == 2) {
+            if (checkWinner()) {
+                setCurrentPlayer(2);
+            } else {
+                // Dice Again
+                if (diceAgain())
+                    setCurrentPlayer(1);
+                else {
+                    setCurrentPlayer(2);
+                }
+                if (stay2){
+                    setCurrentPlayer(1);
+                    stayCounter --;
+                }
+                if (stayCounter == 0){
+                    stay2 = false;
+                    stayCounter = 2;
+                }
+
+            }
         }
     }
-    }
+
 
     @Override
     public void ladder() {
@@ -148,47 +186,48 @@ public class App implements Game{
                 setPlayer1Index(13);
             }
         }
-            if (currentPlayer == 2) {
-                if (getPlayer2Index() == 17) {
-                    setBoardIndex(17, 3);
-                    setBoardIndex(1, 2);
-                    setPlayer2Index(1);
-                } else if (getPlayer2Index() == 20) {
-                    setBoardIndex(20, 4);
-                    setBoardIndex(13, 2);
-                    setPlayer2Index(13);
-                }
+        if (currentPlayer == 2) {
+            if (getPlayer2Index() == 17) {
+                setBoardIndex(17, 3);
+                setBoardIndex(1, 2);
+                setPlayer2Index(1);
+            } else if (getPlayer2Index() == 20) {
+                setBoardIndex(20, 4);
+                setBoardIndex(13, 2);
+                setPlayer2Index(13);
             }
         }
+    }
 
 
     @Override
     public void walk() {
-        if (getCurrentPlayer() == 1){
-            if(getPlayer1Index()+getCurrentDice() > 21){
+        if (getCurrentPlayer() == 1) {
+            if (getPlayer1Index() + getCurrentDice() > 21) {
                 // mach nichts
             } else {
-                 if(moveCounter > 1 && getPlayer1Index() == getPlayer2Index()) {
+                if (moveCounter > 1 && getPlayer1Index() == getPlayer2Index()) {
                     setBoardIndex(getPlayer1Index(), 2);
                 } else
-                setBoardIndex(getPlayer1Index(), 0);
-                setPlayer1Index(getPlayer1Index()+getCurrentDice());
+                    setBoardIndex(getPlayer1Index(), 0);
+                setPlayer1Index(getPlayer1Index() + getCurrentDice());
                 this.setBoardIndex(player1Index, 1);
             }
-        }
-        else if( getCurrentPlayer() == 2){
-            if(getPlayer2Index()+getCurrentDice() > 21){
+        } else if (getCurrentPlayer() == 2) {
+            if (getPlayer2Index() + getCurrentDice() > 21) {
                 // mach nichts
             } else {
-                if(moveCounter > 1 && getPlayer1Index() == getPlayer2Index()) {
+                if (moveCounter > 1 && getPlayer1Index() == getPlayer2Index()) {
                     setBoardIndex(getPlayer2Index(), 1);
                 } else
-                setBoardIndex(getPlayer2Index(), 0);
-                setPlayer2Index(getPlayer2Index()+getCurrentDice());
+                    setBoardIndex(getPlayer2Index(), 0);
+                setPlayer2Index(getPlayer2Index() + getCurrentDice());
                 this.setBoardIndex(player2Index, 2);
+
             }
         }
     }
+
 
     @Override
     public boolean checkWinner() {
@@ -202,112 +241,152 @@ public class App implements Game{
     }
 
     @Override
-    public int specialField() {
-        Random specialRnd = new Random();
-        int specialRandomInt = specialRnd.nextInt(7)+1;
-
+    public String specialField() {
+/*
         // 1 = 1 Feld vor
         // 2 = 2 Felder vor
         // 3 = 3 Felder vor
-        // 4 = Gegner 1 Feld zurück
-        // 5 = Gegner 2 Felder zurück
+        // 4 = 4 Felder vor
+        // 5 = zurück auf start
         // 6 = Player auf Ziel -2
         // 7 = Player auf Feld 2
-
-        if(specialRandomInt == 1){
-            if (getPlayer1Index() == 7 || getPlayer1Index() == 16){
+        if (getPlayer1Index() == 7 || getPlayer1Index() == 16 || getPlayer2Index() == 7 || getPlayer2Index() == 16) {
+            //System.out.println("Random 1: " + specialRandomInt1);
+            if (currentPlayer == 1) {
                 // Case 1
-                if(specialRandomInt == 1){
+                if (specialRandomInt1 == 1) {
                     setBoardIndex(getPlayer1Index(), 6);
-                    setBoardIndex(getPlayer1Index()+1, 1);
-                    setPlayer1Index(getPlayer1Index()+1);
+                    setBoardIndex(getPlayer1Index() + 1, 1);
+                    setPlayer1Index(getPlayer1Index() + 1);
+                    return "Spieler 1 ein Feld vor";
                 }
                 // Case 2
-                else if (specialRandomInt == 2){
+                else if (specialRandomInt1 == 2) {
                     setBoardIndex(getPlayer1Index(), 6);
-                    setBoardIndex(getPlayer1Index()+2, 1);
-                    setPlayer1Index(getPlayer1Index()+2);
+                    setBoardIndex(getPlayer1Index() + 2, 1);
+                    setPlayer1Index(getPlayer1Index() + 2);
+                    return "Spieler 1 zwei Felder vor";
                 }
                 // Case 3
-                else if (specialRandomInt == 3){
+                else if (specialRandomInt1 == 3) {
                     setBoardIndex(getPlayer1Index(), 6);
-                    setBoardIndex(getPlayer1Index()+3, 1);
-                    setPlayer1Index(getPlayer1Index()+3);
+                    setBoardIndex(getPlayer1Index() + 3, 1);
+                    setPlayer1Index(getPlayer1Index() + 3);
+                    return "Spieler 1 drei Felder vor";
                 }
                 // Case 4
-                else if (specialRandomInt == 4){
+                else if (specialRandomInt1 == 4) {
                     setBoardIndex(getPlayer1Index(), 6);
-                    setBoardIndex(getPlayer2Index()-1, 2);
-                    setPlayer2Index(getPlayer2Index()-1);
+                    setBoardIndex(getPlayer1Index() + 4, 1);
+                    setPlayer1Index(getPlayer1Index() + 4);
+                    return "Spieler 1 vier Felder vor";
                 }
                 // Case 5
-                else if (specialRandomInt == 5){
-                    setBoardIndex(getPlayer1Index(), 6);
-                    setBoardIndex(getPlayer2Index()-2, 2);
-                    setPlayer2Index(getPlayer2Index()-2);
-                }
-                // Case 6
-                else if (specialRandomInt == 6){
-                    setBoardIndex(getPlayer1Index(), 6);
-                    setBoardIndex(19, 1);
-                    setPlayer1Index(19);
-                }
-                // Case 7
-                else if (specialRandomInt == 7){
+                else if (specialRandomInt1 == 5) {
                     setBoardIndex(getPlayer1Index(), 6);
                     setBoardIndex(1, 1);
                     setPlayer1Index(1);
+                    return "Spieler 1 zurueck auf Anfang";
+                }
+                // Case 6
+                else if (specialRandomInt1 == 6) {
+                    setBoardIndex(getPlayer1Index(), 6);
+                    setBoardIndex(19, 1);
+                    setPlayer1Index(19);
+                    return "Spieler 1 rueckt vor bis Feld 20";
+                }
+                // Case 7
+                else if (specialRandomInt1 == 7) {
+                    setBoardIndex(getPlayer1Index(), 6);
+                    setBoardIndex(2, 1);
+                    setPlayer1Index(1);
+                    return "Spieler 1 rueckt zurueck auf Feld 2";
                 }
             }
         }
-
-        else if(specialRandomInt == 2){
-            if (getPlayer2Index() == 7 || getPlayer2Index() == 16){
+        else if (currentPlayer == 2) {
+            //System.out.println("Random 2: " + specialRandomInt2);
+            if (getPlayer2Index() == 7 || getPlayer2Index() == 16) {
                 // Case 1
-                if(specialRandomInt == 1){
+                if (specialRandomInt2 == 1) {
                     setBoardIndex(getPlayer2Index(), 6);
-                    setBoardIndex(getPlayer2Index()+1, 2);
-                    setPlayer2Index(getPlayer2Index()+1);
+                    setBoardIndex(getPlayer2Index() + 1, 2);
+                    setPlayer2Index(getPlayer2Index() + 1);
+                    return "Spieler 2 ein Feld vor";
                 }
                 // Case 2
-                else if (specialRandomInt == 2){
+                else if (specialRandomInt2 == 2) {
                     setBoardIndex(getPlayer2Index(), 6);
-                    setBoardIndex(getPlayer2Index()+2, 2);
-                    setPlayer2Index(getPlayer2Index()+2);
+                    setBoardIndex(getPlayer2Index() + 2, 2);
+                    setPlayer2Index(getPlayer2Index() + 2);
+                    return "Spieler 2 zwei Felder vor";
                 }
                 // Case 3
-                else if (specialRandomInt == 3){
+                else if (specialRandomInt2 == 3) {
                     setBoardIndex(getPlayer2Index(), 6);
-                    setBoardIndex(getPlayer2Index()+3, 2);
-                    setPlayer2Index(getPlayer2Index()+3);
+                    setBoardIndex(getPlayer2Index() + 3, 2);
+                    setPlayer2Index(getPlayer2Index() + 3);
+                    return "Spieler 2 drei Felder vor";
                 }
                 // Case 4
-                else if (specialRandomInt == 4){
+                else if (specialRandomInt2 == 4) {
                     setBoardIndex(getPlayer2Index(), 6);
-                    setBoardIndex(getPlayer1Index()-1, 1);
-                    setPlayer1Index(getPlayer1Index()-1);
+                    setBoardIndex(getPlayer2Index() + 4, 2);
+                    setPlayer2Index(getPlayer2Index() + 4);
+                    return "Spieler 2 vier Felder vor";
                 }
                 // Case 5
-                else if (specialRandomInt == 5){
-                    setBoardIndex(getPlayer2Index(), 6);
-                    setBoardIndex(getPlayer1Index()-2, 1);
-                    setPlayer1Index(getPlayer1Index()-2);
-                }
-                // Case 6
-                else if (specialRandomInt == 6){
-                    setBoardIndex(getPlayer2Index(), 6);
-                    setBoardIndex(19, 2);
-                    setPlayer2Index(19);
-                }
-                // Case 7
-                else if (specialRandomInt == 7){
+                else if (specialRandomInt2 == 5) {
                     setBoardIndex(getPlayer2Index(), 6);
                     setBoardIndex(1, 2);
                     setPlayer2Index(1);
+                    return "Spieler 2 zurueck auf Anfang";
+                }
+                // Case 6
+                else if (specialRandomInt2 == 6) {
+                    setBoardIndex(getPlayer2Index(), 6);
+                    setBoardIndex(19, 2);
+                    setPlayer2Index(19);
+                    return "Spieler 2 rueckt vor bis Feld 20";
+                }
+                // Case 7
+                else if (specialRandomInt2 == 7) {
+                    setBoardIndex(getPlayer2Index(), 6);
+                    setBoardIndex(1, 2);
+                    setPlayer2Index(1);
+                    return "Spieler 2 rueckt zurueck auf Feld 2";
                 }
             }
         }
+        */
+        return "";
+    }
 
-        return specialRandomInt;
+    public void stay() {
+        if (currentPlayer == 1) {
+            if (getPlayer1Index() == 7) {
+                stay1 = true;
+            }
+        }
+
+        if (currentPlayer == 2) {
+            if (getPlayer2Index() == 7) {
+                stay2 = true;
+            }
+        }
+    }
+
+    public boolean diceAgain() {
+        if (currentPlayer == 1) {
+            if (getPlayer1Index() == 16) {
+                return false;
+            }
+        }
+        if (currentPlayer == 2) {
+            if (getPlayer2Index() == 16) {
+                return false;
+            }
+        }
+        return true;
     }
 }
