@@ -14,7 +14,6 @@ public class App implements Game {
     private int player2Index;
     private int moveCounter;
 
-
     App() {
         this.currentPlayer = 1;
         this.player1 = 1;
@@ -175,7 +174,7 @@ public class App implements Game {
         setDice(dice);
         if (getCurrentPlayer() == 1) {
             if (getPlayer1Index() + dice > 21) {
-                // mach nichts
+                outOfField();
             } else {
                 if (moveCounter > 1 && getPlayer1Index() == getPlayer2Index()) {
                     setBoardIndex(getPlayer1Index(), 2);
@@ -190,7 +189,7 @@ public class App implements Game {
         } else {
             if (getCurrentPlayer() == 2) {
                 if (getPlayer2Index() + dice > 21) {
-                    // mach nichts
+                    outOfField();
                 } else {
                     if (moveCounter > 1 && getPlayer1Index() == getPlayer2Index()) {
                         setBoardIndex(getPlayer2Index(), 1);
@@ -205,6 +204,10 @@ public class App implements Game {
             System.out.println(Arrays.toString(board));
             gameOver();
         }
+    }
+
+    public boolean outOfField() {
+        return true;
     }
 
     @Override

@@ -9,13 +9,13 @@ public class Draw extends PApplet {
     }
 
     App app = new App();
+
     int[][] fieldCoordinates = {
             {200, 75}, {300, 75}, {400, 75}, {500, 75}, {600, 75}, {700, 75}, {800, 75}, {900, 75},
             {900, 175}, {900, 275}, {900, 375},
             {800, 375}, {700, 375}, {600, 375}, {500, 375}, {400, 375}, {300, 375},
             {300, 225}, {400, 225}, {500, 225}, {600, 225}, {725, 225}
     };
-
 
     public void settings() {
         size(1000, 500);
@@ -27,9 +27,9 @@ public class Draw extends PApplet {
         noStroke();
 
         PImage img;
-        //img = loadImage("Space.jpg");
-        //background(img);
-        background(80, 90, 110);
+        img = loadImage("background.jpg");
+        img.resize(1000, 500);
+        background(img);
     }
 
     public void mousePressed() {
@@ -54,12 +54,12 @@ public class Draw extends PApplet {
                 rect(725, 225, 90, 90, 30);
 
                 fill(255, 165, 0);
-                text("Player " + app.getPlayer1() + " wins!", 275, 460);
+                text("Player " + app.getPlayer1() + " wins!", 325, 460);
             } else if (app.getCurrentPlayer() == 2) {
                 fill(150, 150, 255);
                 rect(725, 225, 90, 90, 30);
                 fill(0, 0, 255);
-                text("Player " + app.getPlayer2() + " wins!", 275, 460);
+                text("Player " + app.getPlayer2() + " wins!", 325, 460);
             }
         }
     }
@@ -120,16 +120,24 @@ public class Draw extends PApplet {
             fill(0);
             textSize(15);
             if (app.getCurrentPlayer() == 1) {
-                return "Player 2 moves " + app.getDice() + " Fields";
+                if (app.outOfField()) {
+                    return "Player 2 moved " + app.getDice() + " Fields";
+                } else {
+                    return "Player 2 can't move!";
+                }
+
             } else if (app.getCurrentPlayer() == 2) {
-                return "Player 1 moves " + app.getDice() + " Fields";
+                if (app.outOfField()) {
+                    return "Player 1 moved " + app.getDice() + " Fields";
+                } else {
+                    return "Player 1 can't move!";
+                }
             }
         }
         return "";
     }
 
-    public void drawBoard(){
-
+    public void drawBoard() {
         // Player Houses
         fill(255, 210, 150);
         rect(50, 50, 50, 50, 5);
@@ -202,14 +210,14 @@ public class Draw extends PApplet {
         text(moveText(), 40, 190);
     }
 
-    public void drawPlayer(){
+    public void drawPlayer() {
         fill(255, 165, 0);      // Player 1 ROT
         ellipse(50, 50, 40, 40);
         fill(0, 0, 255);          // Player 2 BLAU
         ellipse(50, 100, 40, 40);
     }
 
-    public void drawDice(){
+    public void drawDice() {
         fill(150);
         if (app.getCurrentPlayer() == 1) {
             fill(255, 210, 150);
@@ -254,6 +262,7 @@ public class Draw extends PApplet {
         app.ladder();
         app.snake();
         app.diceAgain();
+        app.outOfField();
 
 
         gameOver();
