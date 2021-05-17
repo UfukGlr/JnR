@@ -5,7 +5,7 @@ import java.util.Random;
 
 public class App implements Game {
 
-    private int[] board;
+    private final int[] board;
     private int currentPlayer;
     private final int player1;
     private final int player2;
@@ -62,10 +62,6 @@ public class App implements Game {
         return this.board;
     }
 
-    public void setBoard(int[] board) {
-        this.board = board;
-    }
-
     public void setCurrentPlayer(int player) {
         this.currentPlayer = player;
     }
@@ -90,7 +86,6 @@ public class App implements Game {
         return currentPlayer;
     }
 
-
     public void setPlayer1Index(int player1Index) {
         this.player1Index = player1Index;
     }
@@ -98,6 +93,7 @@ public class App implements Game {
     public void setPlayer2Index(int player2Index) {
         this.player2Index = player2Index;
     }
+
 
 
     @Override
@@ -130,7 +126,6 @@ public class App implements Game {
             }
         }
     }
-
 
     @Override
     public void ladder() {
@@ -175,7 +170,6 @@ public class App implements Game {
         }
     }
 
-
     @Override
     public void walk(int dice) {
         setDice(dice);
@@ -213,12 +207,10 @@ public class App implements Game {
         }
     }
 
-
     @Override
     public boolean checkWinner() {
         return getPlayer1Index() == 21 || getPlayer2Index() == 21;
     }
-
 
     @Override
     public boolean diceAgain() {
@@ -237,7 +229,6 @@ public class App implements Game {
         return false;
 
     }
-
 
     @Override
     public void gameOver() {

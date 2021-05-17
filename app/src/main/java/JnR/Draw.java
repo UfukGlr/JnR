@@ -1,6 +1,5 @@
 package JnR;
 
-import org.w3c.dom.Text;
 import processing.core.PApplet;
 import processing.core.PImage;
 
@@ -33,18 +32,15 @@ public class Draw extends PApplet {
         background(80, 90, 110);
     }
 
-    public void field() {
-    }
-
     public void mousePressed() {
         if (mousePressed) {
+            println("x: " + mouseX + "\ny: " + mouseY);
             if (mouseX > 75 && mouseX < 175) {
                 if (mouseY > 280 && mouseY < 310) {
                     fill(0);
                     rect(125, 400, 70, 70, 20);
                     app.dice();
                     app.setMoveCounter(app.getMoveCounter() + 1);
-
                 }
             }
         }
@@ -65,8 +61,6 @@ public class Draw extends PApplet {
                 fill(0, 0, 255);
                 text("Player " + app.getPlayer2() + " wins!", 275, 460);
             }
-            //delay(4000);
-            //clear();
         }
     }
 
@@ -104,14 +98,38 @@ public class Draw extends PApplet {
         }
     }
 
-    public void draw() {
-        if (mousePressed) {
-            keyPressed();
+    public String specialText() {
+        textSize(15);
+        if (app.getPlayer1Index() == 14 || app.getPlayer2Index() == 14) {
+            fill(0, 200, 0);
+            return "Ladder!";
         }
+        if (app.getPlayer1Index() == 17 || app.getPlayer1Index() == 20 || app.getPlayer2Index() == 17 || app.getPlayer2Index() == 20) {
+            fill(255, 0, 0);
+            return "Snake!";
+        }
+        if (app.getPlayer1Index() == 16 || app.getPlayer2Index() == 16 || app.getPlayer1Index() == 7 || app.getPlayer2Index() == 7) {
+            fill(100, 43, 225);
+            return "Roll the dice again!";
+        }
+        return "";
+    }
 
-        // Colors
+    public String moveText() {
+        if (app.getDice() > 0) {
+            fill(0);
+            textSize(15);
+            if (app.getCurrentPlayer() == 1) {
+                return "Player 2 moves " + app.getDice() + " Fields";
+            } else if (app.getCurrentPlayer() == 2) {
+                return "Player 1 moves " + app.getDice() + " Fields";
+            }
+        }
+        return "";
+    }
 
-        // Fields
+    public void drawBoard(){
+
         // Player Houses
         fill(255, 210, 150);
         rect(50, 50, 50, 50, 5);
@@ -124,26 +142,29 @@ public class Draw extends PApplet {
             rect(i, 75, 50, 50, 10);
         }
         rect(550, 75, 700, 10);
+
         // First Column
         for (int j = 175; j <= 400; j = j + 100) {
             rect(900, j, 50, 50, 10);
         }
         rect(900, 225, 10, 300);
+
         // Second Row
         for (int k = 300; k <= 900; k = k + 100) {
             rect(k, 375, 50, 50, 10);
         }
         rect(600, 375, 600, 10);
+
         // Second Column
         rect(300, 225, 50, 50, 10);
         rect(300, 300, 10, 100);
         textSize(30);
+
         // Third Row
         for (int l = 400; l <= 600; l = l + 100) {
             rect(l, 225, 50, 50, 10);
         }
         rect(500, 225, 400, 10);
-
 
         // Last Field
         fill(255);
@@ -166,83 +187,77 @@ public class Draw extends PApplet {
         text("2x", 282, 385);
         text("2x", 883, 85);
 
-
-        // Player
-        fill(255, 165, 0);      // Player 1 ROT
-        ellipse(50, 50, 40, 40);
-        fill(0, 0, 255);          // Player 2 BLAU
-        ellipse(50, 100, 40, 40);
-
-        // Dice
-        fill(150);
-        if (app.getCurrentPlayer() == 1){
-            fill(255, 210, 150);
-        }
-        if (app.getCurrentPlayer() == 2){
-            fill(150, 150, 255);
-        }
-        rect(125, 295, 105, 45, 10);
-        fill(220);
-        if (mousePressed) {
-        rect(125, 295, 100, 40, 10);
-        }
-        fill(0);
-        textSize(12);
-        text("Roll the Dice", 90, 300);
-        textSize(55);
-        fill(220);
-        if (app.getMoveCounter() > 0){
-            if (app.getCurrentPlayer() == 1){
-                fill(150, 150, 255);
-            }
-            if (app.getCurrentPlayer() == 2){
-                fill(255, 210, 150);
-            }
-        }
-        rect(125, 400, 70, 70, 20);
-        fill(0);
-        text(app.getDice(), 107, 420);
-
-        // Elements
-        fill(210);
-        rect(125, 185, 205, 35, 5);
-        rect(125, 235, 205, 35, 5);
-
-        // Special Fields
-        app.ladder();
-        if (app.getPlayer1Index() == 14 || app.getPlayer2Index() == 14) {
-            fill(0, 200, 0);
-            textSize(15);
-            text("Ladder!", 90, 240);
-        }
-        app.snake();
-        if (app.getPlayer1Index() == 17 || app.getPlayer1Index() == 20 || app.getPlayer2Index() == 17 || app.getPlayer2Index() == 20) {
-            fill(255, 0, 0);
-            textSize(15);
-            text("Snake!", 90, 240);
-        }
-        app.diceAgain();
-        if (app.getPlayer1Index() == 16 || app.getPlayer2Index() == 16 || app.getPlayer1Index() == 7 || app.getPlayer2Index() == 7) {
-            fill(100, 43, 225);
-            textSize(15);
-            text("Roll the dice again!", 50, 240);
-        }
         if (!app.diceAgain()) {
             textSize(30);
             fill(100, 43, 225);
             text("2x", 282, 385);
             text("2x", 883, 85);
         }
-        if (app.getDice() > 0) {
-            fill(0);
-            textSize(15);
-            text("Player " + app.getCurrentPlayer() + " moves " + app.getDice() + " Fields", 40, 190);
+
+        // Elements
+        fill(210);
+        rect(125, 185, 205, 35, 5);
+        rect(125, 235, 205, 35, 5);
+        text(specialText(), 50, 240);
+        text(moveText(), 40, 190);
+    }
+
+    public void drawPlayer(){
+        fill(255, 165, 0);      // Player 1 ROT
+        ellipse(50, 50, 40, 40);
+        fill(0, 0, 255);          // Player 2 BLAU
+        ellipse(50, 100, 40, 40);
+    }
+
+    public void drawDice(){
+        fill(150);
+        if (app.getCurrentPlayer() == 1) {
+            fill(255, 210, 150);
         }
+        if (app.getCurrentPlayer() == 2) {
+            fill(150, 150, 255);
+        }
+        rect(125, 295, 105, 45, 10);
+        fill(220);
+        if (mousePressed) {
+            rect(125, 295, 100, 40, 10);
+        }
+        fill(0);
+        textSize(12);
+        text("Roll the Dice", 90, 300);
+        textSize(55);
+        fill(220);
+        if (app.getMoveCounter() > 0) {
+            if (app.getCurrentPlayer() == 1) {
+                fill(150, 150, 255);
+            }
+            if (app.getCurrentPlayer() == 2) {
+                fill(255, 210, 150);
+            }
+        }
+        rect(125, 400, 70, 70, 20);
+        fill(0);
+        text(app.getDice(), 107, 420);
+    }
+
+    public void draw() {
+        if (mousePressed) {
+            keyPressed();
+        }
+
+        drawBoard();
+        drawPlayer();
+        drawDice();
+
+
+        // Special Fields
+        app.ladder();
+        app.snake();
+        app.diceAgain();
 
 
         gameOver();
         updateField();
         checkSameField();
-
     }
 }
