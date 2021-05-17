@@ -2,37 +2,44 @@ package JnR;
 
 public interface Game {
 
-        void dice();
-        /*
-        Erstellt eine Random Zahl zwischen 1 und 6, ruft die walk funktion auf
-        und wechselt den Spieler
-         */
+    /*
+    Erstellt eine Random Zahl zwischen 1 und 6, ruft die walk funktion auf
+    und wechselt den Spieler
+     */
+    void dice();
 
-        void ladder();
-        /*
-        Bewegt den Spieler auf ein vorher festgelegtes Feld weiter nach vorne
-         */
+    /*
+    Bewegt den Spieler auf ein vorher festgelegtes Feld weiter nach vorne
+     */
+    void ladder();
 
-        void snake();
-        /*
-        Bewegt den Spieler auf ein vorher festgelegtes Feld zurück nach hinten
-         */
+    /*
+    Bewegt den Spieler auf ein vorher festgelegtes Feld zurück nach hinten
+     */
+    void snake();
 
-        void walk(int dice);
-        /*
-        setzt den Index des Spielfeldes auf dem der Player drauf ist auf 0 (leeres Feld)
-        und bewegt den Spieler um die Felder die gewürfelt wurden
-         */
+    /*
+    setzt den Index des Spielfeldes auf dem der Player drauf ist auf 0 (leeres Feld)
+    und bewegt den Spieler um die Felder die gewürfelt wurden
+     */
+    void walk(int dice);
 
-        boolean checkWinner();
-         /*
-         Gibt ein True zurück, sobald einer der Player auf dem Zielfeld steht.
-          */
+    /*
+    Gibt ein True zurück, sobald einer der Player auf dem Zielfeld steht.
+     */
+    boolean checkWinner();
 
-        void stay();
+    /*
+    Befindet sich der Player auf einem diceAgain Feld, gibt die Methode ein true zurück,
+    was den CurrentPlayer wieder auf den gleichen Spieler setzt und es ihm erlaubt
+    nochmal zu Würfeln.
+     */
+    boolean diceAgain();
 
-        boolean diceAgain();
+    /*
+    Sobald checkWinner true ist, wird das Spiel beendet und der Gewinner wird in der
+    Konsole ausgegeben.
+     */
+    void gameOver();
 
-        void gameOver();
-        String specialField();
 }
